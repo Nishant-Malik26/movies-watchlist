@@ -22,7 +22,11 @@ mongoose.connect(process.env.MONGO_URL);
 
 app.use("/auth", require("./routes/Auth"));
 app.use("/movies", require("./routes/MovieCRUD"));
-
+app.get("*", (req, res) => {
+  res.status(200).json({
+    message: "bad request",
+  });
+});
 app.listen(port, () => {
   console.log(`Server is running on ${port}`);
 });
