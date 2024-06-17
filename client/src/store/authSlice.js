@@ -20,7 +20,6 @@ const authSlice = createSlice({
     token: localStorage.getItem("token"),
     isAuthenticated: false,
     loading: true,
-    user: null,
   },
   reducers: {
     logout: (state) => {
@@ -28,13 +27,11 @@ const authSlice = createSlice({
       state.token = null;
       state.isAuthenticated = false;
       state.loading = false;
-      state.user = null;
     },
     loadUser: (state) => {
       state.token = localStorage.getItem("token");
       state.isAuthenticated = true;
       state.loading = false;
-      state.user = null;
     },
   },
   extraReducers: (builder) => {

@@ -7,7 +7,6 @@ const AddEditForm = ({
   handleEditMovie,
   pageHeader,
 }) => {
-  console.log("🚀 ~ AddEditForm ~ movie:", movie);
   const [title, setTitle] = useState(movie?.title || "");
   const [description, setDescription] = useState(movie?.description || "");
   const [releaseYear, setReleaseYear] = useState(movie?.releaseYear || "");

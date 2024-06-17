@@ -18,7 +18,6 @@ import { logout } from "../store/authSlice";
 
 const Watchlist = () => {
   const dispatch = useDispatch();
-  // const moviesfnjbn = useSelector((state) => state);
   const movies = useSelector((state) => state.movies.movies);
   const [isOpen, setIsOpen] = useState(false);
   const [selectedMovie, setSelectedMovie] = useState(null);

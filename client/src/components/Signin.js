@@ -9,7 +9,6 @@ const Signin = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
-  console.log("🚀 ~ Signin ~ isAuthenticated:", isAuthenticated);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

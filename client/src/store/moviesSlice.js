@@ -8,8 +8,6 @@ import { logout } from "./authSlice";
 
 const initialState = {
   movies: [],
-  watchlist: [],
-  status: "idle",
   error: null,
 };
 
@@ -124,7 +122,9 @@ export const toggleWatchstatus = createAsyncThunk(
   "movies/toggleWatchstatus",
   async (movie, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.put(`/watchlist/${movie?._id}`);
+      const response = await axiosInstance.put(
+        `/movies/${movie?._id}/watchStatus`
+      );
       return response.data;
     } catch (error) {
       if (error.response && error.response.status === 401) {

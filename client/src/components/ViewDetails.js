@@ -2,8 +2,6 @@ import React, { useState } from "react";
 import { FaStar } from "react-icons/fa";
 import { useDispatch } from "react-redux";
 import {
-  fetchMovies,
-  toggleWatchstatus,
   updateRating,
 } from "../store/moviesSlice";
 import { IoBookmarkOutline } from "react-icons/io5";
@@ -34,11 +32,6 @@ const ViewDetails = ({
     dispatch(updateRating({ id: movie._id, rating: newRating }));
   };
 
-  // const handleToggleWatchstatus = () => {
-  //   dispatch(toggleWatchstatus({ ...movie, watchStatus: !movie.watchStatus }));
-  //   dispatch(fetchMovies());
-  // };
-
   return (
     <div className="view-container">
       <div className="drawer-header">{pageHeader} Movie</div>
@@ -62,15 +55,10 @@ const ViewDetails = ({
             <strong>Genre:</strong> {movie?.genre}
           </div>
           <div className="toogleWatchlist">
-            {/* <strong>Watch Status:</strong> {movie?.watchStatus} */}
             {movie.watchStatus ? (
-              // <button onClick={handleToggleWatchstatus}>
               <MdBookmark size={32} onClick={handleToggleWatchstatus} />
             ) : (
-              // </button>
-              // <button onClick={handleToggleWatchstatus}>
               <IoBookmarkOutline size={32} onClick={handleToggleWatchstatus} />
-              // </button>
             )}
           </div>
           <div>

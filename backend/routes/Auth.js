@@ -6,7 +6,7 @@ const User = require("../models/Users");
 
 const router = express.Router();
 require("dotenv").config();
-// Register
+
 router.post(
   "/register",
   [
@@ -60,7 +60,6 @@ router.post(
   }
 );
 
-// Login
 router.post(
   "/login",
   [

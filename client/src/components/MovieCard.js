@@ -2,16 +2,12 @@ import React from "react";
 
 const MovieCard = ({
   movie,
-  handleEditMovie,
-  handleDeleteMovie,
-  handleAddToWatchlist,
-  handleRemoveFromWatchlist,
+
   toggleDrawer,
   openPopup,
   handleView,
   setIsEditing,
 }) => {
-  console.log("🚀 ~ movie:", movie);
   const handleEdit = () => {
     console.log("🚀 ~ handleEdit ~ movie:", movie);
     setIsEditing(true);
@@ -21,14 +17,6 @@ const MovieCard = ({
 
   const handleDelete = () => {
     openPopup(movie);
-  };
-
-  const handleAddToWatch = () => {
-    handleAddToWatchlist(movie._id);
-  };
-
-  const handleRemoveFromWatch = () => {
-    handleRemoveFromWatchlist(movie._id);
   };
 
   return (
@@ -44,13 +32,7 @@ const MovieCard = ({
         <div className="buttonsContainer right">
           <button onClick={handleEdit}>Edit</button>
           <button onClick={handleDelete}>Delete</button>
-          {/* {movie.watchStatus ? (
-            <button onClick={handleRemoveFromWatch}>
-              Remove from Watchlist
-            </button>
-          ) : (
-            <button onClick={handleAddToWatch}>Add to Watchlist</button>
-          )} */}
+
           <button onClick={() => handleView(movie)}>View Details</button>
         </div>
       </div>
