@@ -118,6 +118,9 @@ body {
   margin-top: 1rem;
   /* line-height: 45px; */
 }
+.etc {
+  width: 93%;
+}
 .input-container input {
   height: 25px;
   align-content: center;
@@ -299,7 +302,7 @@ body {
   background-color: white;
   margin-top: 22rem;
   bottom: 2.3rem;
-  width: 80%;
+  width: 90%;
   position: sticky;
   bottom: 15px;
 }
@@ -568,4 +571,46 @@ body {
   row-gap: 1rem;
   justify-content: center;
   align-items: center;
+}
+
+.toogleWatchlist {
+  position: absolute;
+  bottom: 20.5rem;
+  right: 2rem;
+  cursor: pointer;
+}
+
+.red {
+  color: red;
+  /* border-color: red; */
+  border: 2px solid red;
+  background-color: white;
+}
+.red:hover {
+  color: white;
+  /* border-color: red; */
+  border: 2px solid red;
+  background-color: red;
+}
+
+.logoutButton {
+  position: absolute;
+  right: 3px;
+  top: 3px;
+  border: 2px solid red;
+  color: red;
+  padding: 7px 15px;
+  border-radius: 3px;
+  background-color: white;
+  font-family: "Comfortaa", sans-serif;
+  font-weight: 900;
+  font-size: large;
+  cursor: pointer;
+  /* margin: 0px 4px; */
+}
+.logoutButton:hover {
+  color: white;
+  /* border-color: red; */
+  border: 2px solid red;
+  background-color: red;
 }

@@ -9,7 +9,7 @@ const ConfirmationPopup = ({ message, onConfirm, onCancel, isOpen }) => {
         <div className="popup">
           <p className="popup-message">{message}</p>
           <div className="footerPopup">
-            <button className="save-button" onClick={onConfirm}>
+            <button className="save-button red" onClick={onConfirm}>
               Confirm
             </button>
             <button className="close-button" onClick={onCancel}>

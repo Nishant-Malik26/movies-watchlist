@@ -5,6 +5,7 @@ const AddEditForm = ({
   movie,
   toggleDrawer,
   handleEditMovie,
+  pageHeader,
 }) => {
   console.log("🚀 ~ AddEditForm ~ movie:", movie);
   const [title, setTitle] = useState(movie?.title || "");
@@ -26,8 +27,10 @@ const AddEditForm = ({
 
   return (
     <form onSubmit={handleSubmit}>
+      <div className="drawer-header">{pageHeader} Movie</div>
+
       <div className="formContainer">
-        <div className="input-container">
+        <div className="input-container etc">
           <label>Title:</label>
           <input
             type="text"

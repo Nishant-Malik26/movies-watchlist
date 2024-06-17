@@ -1,10 +1,22 @@
 import React, { useState } from "react";
 import { FaStar } from "react-icons/fa";
 import { useDispatch } from "react-redux";
-import { updateRating } from "../store/moviesSlice";
+import {
+  fetchMovies,
+  toggleWatchstatus,
+  updateRating,
+} from "../store/moviesSlice";
+import { IoBookmarkOutline } from "react-icons/io5";
+import { MdBookmark } from "react-icons/md";
 
-const ViewDetails = ({ movie, pageHeader, onEdit, onDelete, onAddReview }) => {
-  console.log("🚀 ~ ViewDetails ~ movie:", movie);
+const ViewDetails = ({
+  movie,
+  pageHeader,
+  onEdit,
+  onDelete,
+  onAddReview,
+  handleToggleWatchstatus,
+}) => {
   const [rating, setRating] = useState(movie?.rating || 0);
   const [hover, setHover] = useState(null);
   const [newReview, setNewReview] = useState("");
@@ -22,6 +34,11 @@ const ViewDetails = ({ movie, pageHeader, onEdit, onDelete, onAddReview }) => {
     dispatch(updateRating({ id: movie._id, rating: newRating }));
   };
 
+  // const handleToggleWatchstatus = () => {
+  //   dispatch(toggleWatchstatus({ ...movie, watchStatus: !movie.watchStatus }));
+  //   dispatch(fetchMovies());
+  // };
+
   return (
     <div className="view-container">
       <div className="drawer-header">{pageHeader} Movie</div>
@@ -32,7 +49,11 @@ const ViewDetails = ({ movie, pageHeader, onEdit, onDelete, onAddReview }) => {
           src="https://picsum.photos/400/200"
           alt="movie"
         />
-        <p>{movie?.description}</p>
+
+        <p>
+          <strong>Description: </strong>
+          {movie?.description}
+        </p>
         <div className="movie-info">
           <div>
             <strong>Release Year:</strong> {movie?.releaseYear}
@@ -40,13 +61,22 @@ const ViewDetails = ({ movie, pageHeader, onEdit, onDelete, onAddReview }) => {
           <div>
             <strong>Genre:</strong> {movie?.genre}
           </div>
-          <div>
-            <strong>Watch Status:</strong> {movie?.watchStatus}
+          <div className="toogleWatchlist">
+            {/* <strong>Watch Status:</strong> {movie?.watchStatus} */}
+            {movie.watchStatus ? (
+              // <button onClick={handleToggleWatchstatus}>
+              <MdBookmark size={32} onClick={handleToggleWatchstatus} />
+            ) : (
+              // </button>
+              // <button onClick={handleToggleWatchstatus}>
+              <IoBookmarkOutline size={32} onClick={handleToggleWatchstatus} />
+              // </button>
+            )}
           </div>
           <div>
             <strong>Rating:</strong>
             <div className="star-rating">
-              {[...Array(5)].map((star, index) => {
+              {[...Array(5)].map((__, index) => {
                 const ratingValue = index + 1;
                 return (
                   <FaStar
@@ -67,11 +97,7 @@ const ViewDetails = ({ movie, pageHeader, onEdit, onDelete, onAddReview }) => {
         </div>
         <div className="reviews">
           <h3>Reviews</h3>
-          {movie?.reviews?.map((review, index) => (
-            <div key={index} className="review">
-              {review}
-            </div>
-          ))}
+
           <div className="add-review">
             <input
               type="text"
@@ -81,6 +107,11 @@ const ViewDetails = ({ movie, pageHeader, onEdit, onDelete, onAddReview }) => {
             />
             <button onClick={handleAddReview}>Add Review</button>
           </div>
+          {movie?.reviews?.map((review, index) => (
+            <div key={index + "shjuj"} className="review">
+              {review}
+            </div>
+          ))}
         </div>
       </div>
       <div className="actions">

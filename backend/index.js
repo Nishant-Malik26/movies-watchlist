@@ -131,21 +131,22 @@ app.put("/movies/:id/rating", auth, async (req, res) => {
   }
 });
 
-app.post("/watchlist/:id", auth, async (req, res) => {
+app.put("/watchlist/:id", auth, async (req, res) => {
   try {
     const { id } = req.params;
     const movie = await Movie.findById(id);
-    if (movie) {
-      const existingMovie = await Watchlist.findById(id);
-      if (!existingMovie) {
-        const watchlistMovie = new Watchlist(movie.toObject());
-        await watchlistMovie.save();
-        return res.status(201).json(watchlistMovie);
-      } else {
-        return res.status(400).json({ message: "Movie already in watchlist" });
-      }
-    } else {
+    if (!movie) {
       return res.status(404).json({ message: "Movie not found" });
+    }
+    if (movie?.watchStatus) {
+      movie.watchStatus = false;
+      // const updatedMovie = new Movie
+      await movie.save();
+      return res.status(201).json(movie);
+    } else {
+      movie.watchStatus = true;
+      await movie.save();
+      return res.status(201).json(movie);
     }
   } catch (error) {
     return res.status(500).json("Internal Server Error");

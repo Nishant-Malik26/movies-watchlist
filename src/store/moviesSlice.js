@@ -120,43 +120,12 @@ export const addReview = createAsyncThunk(
   }
 );
 
-export const fetchWatchlist = createAsyncThunk(
-  "movies/fetchWatchlist",
-  async (_, { rejectWithValue }) => {
+export const toggleWatchstatus = createAsyncThunk(
+  "movies/toggleWatchstatus",
+  async (movie, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.get("/watchlist");
+      const response = await axiosInstance.put(`/watchlist/${movie?._id}`);
       return response.data;
-    } catch (error) {
-      console.log("🚀 ~ error:", error);
-      if (error.response && error.response.status === 401) {
-        return rejectWithValue("Unauthorized");
-      }
-      throw error;
-    }
-  }
-);
-
-export const addToWatchlist = createAsyncThunk(
-  "movies/addToWatchlist",
-  async (id, { rejectWithValue }) => {
-    try {
-      const response = await axiosInstance.post(`/watchlist/${id}`);
-      return response.data;
-    } catch (error) {
-      if (error.response && error.response.status === 401) {
-        return rejectWithValue("Unauthorized");
-      }
-      throw error;
-    }
-  }
-);
-
-export const removeFromWatchlist = createAsyncThunk(
-  "movies/removeFromWatchlist",
-  async (id, { rejectWithValue }) => {
-    try {
-      await axiosInstance.delete(`/watchlist/${id}`);
-      return id;
     } catch (error) {
       if (error.response && error.response.status === 401) {
         return rejectWithValue("Unauthorized");
@@ -204,16 +173,16 @@ const moviesSlice = createSlice({
           existingMovie.rating = updatedMovie.rating;
         }
       })
-      .addCase(fetchWatchlist.fulfilled, (state, action) => {
-        state.watchlist = action.payload;
-      })
-      .addCase(addToWatchlist.fulfilled, (state, action) => {
-        state.watchlist.push(action.payload);
-      })
-      .addCase(removeFromWatchlist.fulfilled, (state, action) => {
-        state.watchlist = state.watchlist.filter(
-          (movie) => movie._id !== action.payload
+
+      .addCase(toggleWatchstatus.fulfilled, (state, action) => {
+        const updatedMovie = action.payload;
+        console.log("🚀 ~ .addCase ~ action.payload:", action.payload);
+        const existingMovie = state.movies.find(
+          (movie) => movie._id === updatedMovie._id
         );
+        if (existingMovie) {
+          existingMovie.watchStatus = updatedMovie.watchStatus;
+        }
       })
       .addMatcher(isRejectedWithValue, (state, action) => {
         state.error = action.error.message;

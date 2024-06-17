@@ -2,9 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchMovies,
-  addToWatchlist,
-  removeFromWatchlist,
-  fetchWatchlist,
+  toggleWatchstatus,
   addMovie,
   updateMovie,
   deleteMovie,
@@ -22,9 +20,6 @@ const Watchlist = () => {
   const dispatch = useDispatch();
   // const moviesfnjbn = useSelector((state) => state);
   const movies = useSelector((state) => state.movies.movies);
-  const auth = useSelector((state) => state.auth);
-  console.log("🚀 ~ Watchlist ~ auth:", auth);
-  const watchlist = useSelector((state) => state.movies.watchlist);
   const [isOpen, setIsOpen] = useState(false);
   const [selectedMovie, setSelectedMovie] = useState(null);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
@@ -32,11 +27,9 @@ const Watchlist = () => {
 
   useEffect(() => {
     dispatch(fetchMovies());
-    dispatch(fetchWatchlist());
   }, [dispatch]);
 
   const toggleDrawer = (movie) => {
-    console.log("🚀 ~ toggleDrawer ~ movie:", movie);
     setSelectedMovie(movie);
     setIsOpen(!isOpen);
   };
@@ -75,14 +68,6 @@ const Watchlist = () => {
     closePopup();
   };
 
-  const handleAddToWatchlist = (id) => {
-    dispatch(addToWatchlist(id));
-  };
-
-  const handleRemoveFromWatchlist = (id) => {
-    dispatch(removeFromWatchlist(id));
-  };
-
   const handleEdit = () => {
     setIsEditing(true);
   };
@@ -98,7 +83,6 @@ const Watchlist = () => {
   };
 
   const handleView = (movie) => {
-    console.log("🚀 ~ handleView ~ movie:", movie);
     setSelectedMovie(movie);
     setIsEditing(false);
     toggleDrawer(movie);
@@ -114,6 +98,16 @@ const Watchlist = () => {
     dispatch(logout());
   };
 
+  const handleToggleWatchstatus = () => {
+    dispatch(
+      toggleWatchstatus({
+        ...selectedMovie,
+        watchStatus: !selectedMovie.watchStatus,
+      })
+    );
+    dispatch(fetchMovies());
+  };
+
   return (
     <div>
       <div className="watchlistContainer">
@@ -126,6 +120,7 @@ const Watchlist = () => {
           Add movies
         </button>
       </div>
+      <br />
       <div className="listContainer">
         {movies.length > 0 ? (
           movies.map((movie) => (
@@ -134,8 +129,6 @@ const Watchlist = () => {
               movie={movie}
               handleEditMovie={handleEditMovie}
               handleDeleteMovie={handleDeleteMovie}
-              handleAddToWatchlist={handleAddToWatchlist}
-              handleRemoveFromWatchlist={handleRemoveFromWatchlist}
               toggleDrawer={toggleDrawer}
               openPopup={openPopup}
               handleView={handleView}
@@ -152,6 +145,7 @@ const Watchlist = () => {
         <Drawer isOpen={isOpen} toggleDrawer={toggleDrawer}>
           {isEditing ? (
             <AddEditForm
+              pageHeader={selectedMovie ? "Edit" : "Add"}
               movie={selectedMovie}
               handleAddMovie={handleAddMovie}
               toggleDrawer={toggleDrawer}
@@ -159,12 +153,13 @@ const Watchlist = () => {
             />
           ) : (
             <ViewDetails
-              movie={selectedMovie}
+              movie={movies.find((el) => el?._id === selectedMovie._id)}
               pageHeader="View"
               onEdit={handleEdit}
               onDelete={openPopup}
               onAddReview={handleAddReview}
               onUpdateRating={handleUpdateRating}
+              handleToggleWatchstatus={handleToggleWatchstatus}
             />
           )}
         </Drawer>
