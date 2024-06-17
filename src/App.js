@@ -2,75 +2,33 @@ import "./App.css";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Signup } from "./components/Signup";
 import Watchlist from "./components/Watchlist";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchMovies } from "./store/moviesSlice";
+import Signin from "./components/Signin";
+import { PrivateRoutes } from "./components/routing/PrivateRoutes";
+import { loadUser } from "./store/authSlice";
 
 function App() {
+  const dispatch = useDispatch();
+  // console.log("🚀 ~ App ~ isAuthenticated:", isAuthenticated);
+  // const movies = useSelector((state) => state.movies.movies);
+
+  useEffect(() => {
+    if (localStorage.getItem("token")) {
+      dispatch(loadUser());
+    }
+  }, []);
+
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Signup />} />
-        <Route
-          path="/watchlist"
-          element={
-            <Watchlist
-              watchlist={[
-                {
-                  key: "fdzxfcgvhjiokoijhg",
-                  title: "khjbj",
-                  description: "bjhsvjh",
-                  releaseYear: "5098",
-                  genre: "huegu",
-                },
-                {
-                  key: "fdzxfcgvhbhvhvghcjiokoijhg",
-                  title: "khjbj",
-                  description: "bjhsvjh",
-                  releaseYear: "5098",
-                  genre: "huegu",
-                },
-                {
-                  title: "Sample Movie",
-                  description: "This is a sample movie description.",
-                  releaseYear: "2024",
-                  genre: "Drama",
-                  watchStatus: "Watched",
-                  rating: "4.5/5",
-                  reviews: [
-                    "Great movie!",
-                    "Really enjoyed it!",
-                    "Must watch!",
-                    "Must watch!",
-                    "Must watch!",
-                    "Must watch!",
-                    "Must watch!",
-                    "Must watch!",
-                    "Must watch!",
-                    "Must watch!",
-                    "Must watch!",
-                    "Must watch!",
-                    "Must watch!",
-                    "Must watch!",
-                    "Must watch!",
-                    "Must watch!",
-                    "Must watch!",
-                    "Must watch!",
-                    "Must watch!",
-                    "Must watch!",
-                    "Must watch!",
-                    "Must watch!",
-                    "Must watch!",
-                    "Must watch!",
-                    "Must watch!",
-                    "Must watch!",
-                    "Must watch!",
-                    "Must watch!",
-                    "Must watch!",
-                    "Must watch!",
-                  ],
-                },
-              ]}
-            />
-          }
-        />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/signin" element={<Signin />} />
+        <Route element={<PrivateRoutes />}>
+          watchlist
+          <Route path="/watchlist" element={<Watchlist />} />
+        </Route>
       </Routes>
     </BrowserRouter>
   );

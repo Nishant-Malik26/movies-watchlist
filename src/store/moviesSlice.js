@@ -1,5 +1,10 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import {
+  createSlice,
+  createAsyncThunk,
+  isRejectedWithValue,
+} from "@reduxjs/toolkit";
 import axiosInstance from "../api/apiConfig";
+import { logout } from "./authSlice";
 
 const initialState = {
   movies: [],
@@ -8,73 +13,156 @@ const initialState = {
   error: null,
 };
 
-export const fetchMovies = createAsyncThunk("movies/fetchMovies", async () => {
-  const response = await axiosInstance.get("/movies");
-  return response.data;
-});
+axiosInstance.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      config.headers["Authorization"] = token;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
 
-export const addMovie = createAsyncThunk("movies/addMovie", async (movie) => {
-  const response = await axiosInstance.post("/movies", movie);
-  return response.data;
-});
+export const fetchMovies = createAsyncThunk(
+  "movies/fetchMovies",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.get("/movies");
+      return response.data;
+    } catch (error) {
+      if (error.response && error.response.status === 401) {
+        return rejectWithValue("Unauthorized");
+      }
+      throw error;
+    }
+  }
+);
+
+export const addMovie = createAsyncThunk(
+  "movies/addMovie",
+  async (movie, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.post("/movies", movie);
+      return response.data;
+    } catch (error) {
+      if (error.response && error.response.status === 401) {
+        return rejectWithValue("Unauthorized");
+      }
+      throw error;
+    }
+  }
+);
 
 export const updateMovie = createAsyncThunk(
   "movies/updateMovie",
-  async ({ id, movie }) => {
-    const response = await axiosInstance.put(`/movies/${id}`, movie);
-    return response.data;
+  async ({ id, movie }, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.put(`/movies/${id}`, movie);
+      return response.data;
+    } catch (error) {
+      if (error.response && error.response.status === 401) {
+        return rejectWithValue("Unauthorized");
+      }
+      throw error;
+    }
   }
 );
 
 export const deleteMovie = createAsyncThunk(
   "movies/deleteMovie",
-  async (id) => {
-    await axiosInstance.delete(`/movies/${id}`);
-    return id;
+  async (id, { rejectWithValue }) => {
+    try {
+      await axiosInstance.delete(`/movies/${id}`);
+      return id;
+    } catch (error) {
+      if (error.response && error.response.status === 401) {
+        return rejectWithValue("Unauthorized");
+      }
+      throw error;
+    }
   }
 );
 
 export const updateRating = createAsyncThunk(
   "movies/updateRating",
-  async ({ id, rating }) => {
-    const response = await axiosInstance.put(`/movies/${id}/rating`, {
-      rating,
-    });
-    return response.data;
+  async ({ id, rating }, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.put(`/movies/${id}/rating`, {
+        rating,
+      });
+      return response.data;
+    } catch (error) {
+      if (error.response && error.response.status === 401) {
+        return rejectWithValue("Unauthorized");
+      }
+      throw error;
+    }
   }
 );
 
 export const addReview = createAsyncThunk(
   "movies/addReview",
-  async ({ id, review }) => {
-    const response = await axiosInstance.post(`/movies/${id}/reviews`, {
-      review,
-    });
-    return response.data;
+  async ({ id, review }, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.post(`/movies/${id}/reviews`, {
+        review,
+      });
+      return response.data;
+    } catch (error) {
+      if (error.response && error.response.status === 401) {
+        return rejectWithValue("Unauthorized");
+      }
+      throw error;
+    }
   }
 );
 
 export const fetchWatchlist = createAsyncThunk(
   "movies/fetchWatchlist",
-  async () => {
-    const response = await axiosInstance.get("/watchlist");
-    return response.data;
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.get("/watchlist");
+      return response.data;
+    } catch (error) {
+      console.log("🚀 ~ error:", error);
+      if (error.response && error.response.status === 401) {
+        return rejectWithValue("Unauthorized");
+      }
+      throw error;
+    }
   }
 );
 
 export const addToWatchlist = createAsyncThunk(
   "movies/addToWatchlist",
-  async (id) => {
-    const response = await axiosInstance.post(`/watchlist/${id}`);
-    return response.data;
+  async (id, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.post(`/watchlist/${id}`);
+      return response.data;
+    } catch (error) {
+      if (error.response && error.response.status === 401) {
+        return rejectWithValue("Unauthorized");
+      }
+      throw error;
+    }
   }
 );
 
 export const removeFromWatchlist = createAsyncThunk(
   "movies/removeFromWatchlist",
-  async (id) => {
-    await axiosInstance.delete(`/watchlist/${id}`);
-    return id;
+  async (id, { rejectWithValue }) => {
+    try {
+      await axiosInstance.delete(`/watchlist/${id}`);
+      return id;
+    } catch (error) {
+      if (error.response && error.response.status === 401) {
+        return rejectWithValue("Unauthorized");
+      }
+      throw error;
+    }
   }
 );
 
@@ -126,6 +214,13 @@ const moviesSlice = createSlice({
         state.watchlist = state.watchlist.filter(
           (movie) => movie._id !== action.payload
         );
+      })
+      .addMatcher(isRejectedWithValue, (state, action) => {
+        state.error = action.error.message;
+        if (action.payload === "Unauthorized") {
+          console.log("🚀 ~ .addMatcher ~ action.payload:", action.payload);
+          logout();
+        }
       });
   },
 });

@@ -16,10 +16,14 @@ import Drawer from "./Drawer";
 import AddEditForm from "./AddEditForm";
 import ConfirmationPopup from "./ConfirmationPopup";
 import ViewDetails from "./ViewDetails";
+import { logout } from "../store/authSlice";
 
 const Watchlist = () => {
   const dispatch = useDispatch();
+  // const moviesfnjbn = useSelector((state) => state);
   const movies = useSelector((state) => state.movies.movies);
+  const auth = useSelector((state) => state.auth);
+  console.log("🚀 ~ Watchlist ~ auth:", auth);
   const watchlist = useSelector((state) => state.movies.watchlist);
   const [isOpen, setIsOpen] = useState(false);
   const [selectedMovie, setSelectedMovie] = useState(null);
@@ -50,7 +54,6 @@ const Watchlist = () => {
   };
 
   const openPopup = (movie) => {
-    console.log("🚀 ~ openPopup ~ movie:", movie);
     setSelectedMovie(movie);
     setIsPopupOpen(true);
   };
@@ -107,25 +110,43 @@ const Watchlist = () => {
     setSelectedMovie(null);
   };
 
+  const handleLogout = () => {
+    dispatch(logout());
+  };
+
   return (
     <div>
-      <div>Movies Watchlist created by you!!</div>
-      <button onClick={handleAdd}>Add movies</button>
+      <div className="watchlistContainer">
+        <button className="logoutButton" onClick={handleLogout}>
+          Logout
+        </button>
+
+        <div className="pageHeading">Movies Watchlist created by you!!</div>
+        <button className="addButton" onClick={handleAdd}>
+          Add movies
+        </button>
+      </div>
       <div className="listContainer">
-        {movies.map((movie) => (
-          <MovieCard
-            key={movie._id}
-            movie={movie}
-            handleEditMovie={handleEditMovie}
-            handleDeleteMovie={handleDeleteMovie}
-            handleAddToWatchlist={handleAddToWatchlist}
-            handleRemoveFromWatchlist={handleRemoveFromWatchlist}
-            toggleDrawer={toggleDrawer}
-            openPopup={openPopup}
-            handleView={handleView}
-            setIsEditing={setIsEditing}
-          />
-        ))}
+        {movies.length > 0 ? (
+          movies.map((movie) => (
+            <MovieCard
+              key={movie._id}
+              movie={movie}
+              handleEditMovie={handleEditMovie}
+              handleDeleteMovie={handleDeleteMovie}
+              handleAddToWatchlist={handleAddToWatchlist}
+              handleRemoveFromWatchlist={handleRemoveFromWatchlist}
+              toggleDrawer={toggleDrawer}
+              openPopup={openPopup}
+              handleView={handleView}
+              setIsEditing={setIsEditing}
+            />
+          ))
+        ) : (
+          <div className="notFound">
+            Movies not found. Please Add using the button above
+          </div>
+        )}
       </div>
       {isOpen && (
         <Drawer isOpen={isOpen} toggleDrawer={toggleDrawer}>

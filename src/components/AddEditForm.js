@@ -26,38 +26,44 @@ const AddEditForm = ({
 
   return (
     <form onSubmit={handleSubmit}>
-      <div>
-        <label>Title:</label>
-        <input
-          type="text"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-        />
+      <div className="formContainer">
+        <div className="input-container">
+          <label>Title:</label>
+          <input
+            type="text"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+          />
+
+          <label>Description:</label>
+          <textarea
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+          />
+
+          <label>Release Year:</label>
+          <input
+            type="text"
+            value={releaseYear}
+            onChange={(e) => setReleaseYear(e.target.value)}
+          />
+
+          <label>Genre:</label>
+          <input
+            type="text"
+            value={genre}
+            onChange={(e) => setGenre(e.target.value)}
+          />
+        </div>
       </div>
-      <div>
-        <label>Description:</label>
-        <textarea
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-        />
+      <div className="footer">
+        <button className="save-button" type="submit">
+          Save
+        </button>
+        <button className="close-button" onClick={toggleDrawer}>
+          Close
+        </button>
       </div>
-      <div>
-        <label>Release Year:</label>
-        <input
-          type="text"
-          value={releaseYear}
-          onChange={(e) => setReleaseYear(e.target.value)}
-        />
-      </div>
-      <div>
-        <label>Genre:</label>
-        <input
-          type="text"
-          value={genre}
-          onChange={(e) => setGenre(e.target.value)}
-        />
-      </div>
-      <button type="submit">Save</button>
     </form>
   );
 };

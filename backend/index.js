@@ -2,6 +2,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const cors = require("cors");
+const auth = require("./middlewares/auth");
 
 const app = express();
 const port = 5001;
@@ -29,105 +30,143 @@ const movieSchema = new mongoose.Schema({
   rating: Number,
   reviews: [String],
   watchStatus: Boolean,
+  user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
 });
 
 const Movie = mongoose.model("Movie", movieSchema);
 const Watchlist = mongoose.model("Watchlist", movieSchema);
 
-app.get("/movies", async (req, res) => {
-  const movies = await Movie.find();
-  res.json(movies);
-});
+app.use("/auth", require("./routes/Auth"));
 
-app.post("/movies", async (req, res) => {
-  const { title, description, releaseYear, genre } = req.body;
-  const newMovie = new Movie({
-    title,
-    description,
-    releaseYear,
-    genre,
-    rating: 0,
-    reviews: [],
-    watchStatus: false,
-  });
-  await newMovie.save();
-  res.status(201).json(newMovie);
-});
-
-app.put("/movies/:id", async (req, res) => {
-  const { id } = req.params;
-  const { title, description, releaseYear, genre } = req.body;
-  const movie = await Movie.findById(id);
-  if (movie) {
-    movie.title = title || movie.title;
-    movie.description = description || movie.description;
-    movie.releaseYear = releaseYear || movie.releaseYear;
-    movie.genre = genre || movie.genre;
-    await movie.save();
-    res.json(movie);
-  } else {
-    res.status(404).json({ message: "Movie not found" });
+app.get("/movies", auth, async (req, res) => {
+  try {
+    const movies = await Movie.find({ user: req.user.id });
+    return res.json(movies);
+  } catch (error) {
+    return res.status(500).json("Internal Server Error");
   }
 });
 
-app.delete("/movies/:id", async (req, res) => {
-  const { id } = req.params;
-  await Movie.findByIdAndDelete(id);
-  res.status(204).send();
-});
-
-app.post("/movies/:id/reviews", async (req, res) => {
-  const { id } = req.params;
-  const { review } = req.body;
-  const movie = await Movie.findById(id);
-  if (movie) {
-    movie.reviews.push(review);
-    await movie.save();
-    res.status(201).json(movie);
-  } else {
-    res.status(404).json({ message: "Movie not found" });
+app.post("/movies", auth, async (req, res) => {
+  try {
+    const { title, description, releaseYear, genre } = req.body;
+    const newMovie = new Movie({
+      title,
+      description,
+      releaseYear,
+      genre,
+      rating: 0,
+      reviews: [],
+      watchStatus: false,
+      user: req.user.id,
+    });
+    await newMovie.save();
+    return res.status(201).json(newMovie);
+  } catch (error) {
+    return res.status(500).json("Internal Server Error");
   }
 });
 
-app.put("/movies/:id/rating", async (req, res) => {
-  const { id } = req.params;
-  const { rating } = req.body;
-  const movie = await Movie.findById(id);
-  if (movie) {
-    movie.rating = rating;
-    await movie.save();
-    res.json(movie);
-  } else {
-    res.status(404).json({ message: "Movie not found" });
-  }
-});
-
-app.post("/watchlist/:id", async (req, res) => {
-  const { id } = req.params;
-  const movie = await Movie.findById(id);
-  if (movie) {
-    const existingMovie = await Watchlist.findById(id);
-    if (!existingMovie) {
-      const watchlistMovie = new Watchlist(movie.toObject());
-      await watchlistMovie.save();
-      res.status(201).json(watchlistMovie);
+app.put("/movies/:id", auth, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title, description, releaseYear, genre } = req.body;
+    const movie = await Movie.findById(id);
+    if (movie) {
+      movie.title = title || movie.title;
+      movie.description = description || movie.description;
+      movie.releaseYear = releaseYear || movie.releaseYear;
+      movie.genre = genre || movie.genre;
+      await movie.save();
+      return res.json(movie);
     } else {
-      res.status(400).json({ message: "Movie already in watchlist" });
+      return res.status(404).json({ message: "Movie not found" });
     }
-  } else {
-    res.status(404).json({ message: "Movie not found" });
+  } catch (error) {
+    return res.status(500).json("Internal Server Error");
   }
 });
 
-app.delete("/watchlist/:id", async (req, res) => {
-  const { id } = req.params;
-  await Watchlist.findByIdAndDelete(id);
-  res.status(204).send();
+app.delete("/movies/:id", auth, async (req, res) => {
+  try {
+    const { id } = req.params;
+    await Movie.findByIdAndDelete(id);
+    return res.status(204).json({ msg: "Movie Deleted Sccesfully" });
+  } catch (error) {
+    return res.status(500).json("Internal Server Error");
+  }
 });
 
-app.get("/watchlist", async (req, res) => {
-  const watchlist = await Watchlist.find();
-  res.json(watchlist);
+app.post("/movies/:id/reviews", auth, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { review } = req.body;
+    const movie = await Movie.findById(id);
+    if (movie) {
+      movie.reviews.push(review);
+      await movie.save();
+      return res.status(201).json(movie);
+    } else {
+      return res.status(404).json({ message: "Movie not found" });
+    }
+  } catch (error) {
+    return res.status(500).json("Internal Server Error");
+  }
+});
+
+app.put("/movies/:id/rating", auth, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { rating } = req.body;
+    const movie = await Movie.findById(id);
+    if (movie) {
+      movie.rating = rating;
+      await movie.save();
+      res.json(movie);
+    } else {
+      res.status(404).json({ message: "Movie not found" });
+    }
+  } catch (error) {
+    return res.status(500).json("Internal Server Error");
+  }
+});
+
+app.post("/watchlist/:id", auth, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const movie = await Movie.findById(id);
+    if (movie) {
+      const existingMovie = await Watchlist.findById(id);
+      if (!existingMovie) {
+        const watchlistMovie = new Watchlist(movie.toObject());
+        await watchlistMovie.save();
+        return res.status(201).json(watchlistMovie);
+      } else {
+        return res.status(400).json({ message: "Movie already in watchlist" });
+      }
+    } else {
+      return res.status(404).json({ message: "Movie not found" });
+    }
+  } catch (error) {
+    return res.status(500).json("Internal Server Error");
+  }
+});
+
+// app.delete("/watchlist/:id", auth, async (req, res) => {
+//   try {
+//     const { id } = req.params;
+//     await Watchlist.findByIdAndDelete(id);
+//     res.status(204).send();
+//   } catch (error) {}
+// });
+
+app.get("/watchlist", auth, async (req, res) => {
+  try {
+    const watchlist = await Watchlist.find();
+    res.status(200).json(watchlist);
+  } catch (error) {
+    return res.status(500).json("Internal Server Error");
+  }
 });
 
 app.listen(port, () => {
