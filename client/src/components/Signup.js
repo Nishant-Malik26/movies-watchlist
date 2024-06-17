@@ -29,7 +29,7 @@ export const Signup = () => {
         </section>
         <div className="grid-child green">
           <div className="rightContainer">
-            <h2>Welcome to Company name</h2>
+            <h2>Welcome to MovieWatch</h2>
             <div className="internalContainer">
               <div>Sign in to continue</div>
               <div className="not-member">
