@@ -1,11 +1,5 @@
 import "./App.css";
-import {
-  BrowserRouter,
-  Route,
-  Routes,
-  redirect,
-  useNavigate,
-} from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { Signup } from "./components/Signup";
 import Watchlist from "./components/Watchlist";
 import { useEffect } from "react";
@@ -25,12 +19,12 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route exact path="/" element={<Signin />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/signin" element={<Signin />} />
         <Route element={<PrivateRoutes />}>
           <Route path="/watchlist" element={<Watchlist />} />
         </Route>
+        <Route path="*" element={<Navigate to="/signin" replace />} />
       </Routes>
     </BrowserRouter>
   );
