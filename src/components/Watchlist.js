@@ -1,18 +1,57 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  fetchMovies,
+  addToWatchlist,
+  removeFromWatchlist,
+  fetchWatchlist,
+  addMovie,
+  updateMovie,
+  deleteMovie,
+  addReview,
+  updateRating,
+} from "../store/moviesSlice";
 import MovieCard from "./MovieCard";
 import Drawer from "./Drawer";
 import AddEditForm from "./AddEditForm";
 import ConfirmationPopup from "./ConfirmationPopup";
+import ViewDetails from "./ViewDetails";
 
-const Watchlist = ({ watchlist }) => {
+const Watchlist = () => {
+  const dispatch = useDispatch();
+  const movies = useSelector((state) => state.movies.movies);
+  const watchlist = useSelector((state) => state.movies.watchlist);
   const [isOpen, setIsOpen] = useState(false);
-  const [editMovie, setEditMovie] = useState(null);
-  const [pageHeader, setPageHeader] = useState("Add");
+  const [selectedMovie, setSelectedMovie] = useState(null);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
-  console.log("🚀 ~ Watchlist ~ isPopupOpen:", isPopupOpen);
+  const [isEditing, setIsEditing] = useState(true);
 
-  const openPopup = () => {
-    console.log("first");
+  useEffect(() => {
+    dispatch(fetchMovies());
+    dispatch(fetchWatchlist());
+  }, [dispatch]);
+
+  const toggleDrawer = (movie) => {
+    console.log("🚀 ~ toggleDrawer ~ movie:", movie);
+    setSelectedMovie(movie);
+    setIsOpen(!isOpen);
+  };
+
+  const handleAddMovie = (movie) => {
+    dispatch(addMovie(movie));
+  };
+
+  const handleEditMovie = (id, movie) => {
+    dispatch(updateMovie({ id, movie }));
+  };
+
+  const handleDeleteMovie = (id) => {
+    dispatch(deleteMovie(id));
+  };
+
+  const openPopup = (movie) => {
+    console.log("🚀 ~ openPopup ~ movie:", movie);
+    setSelectedMovie(movie);
     setIsPopupOpen(true);
   };
 
@@ -21,53 +60,92 @@ const Watchlist = ({ watchlist }) => {
   };
 
   const handleConfirm = () => {
-    // Handle confirmation logic
+    handleDeleteMovie(selectedMovie._id);
     closePopup();
+    if (isOpen) {
+      toggleDrawer(selectedMovie);
+    }
+    setIsEditing(false);
   };
 
   const handleCancel = () => {
     closePopup();
   };
 
-  const toggleDrawer = () => {
-    setIsOpen(!isOpen);
+  const handleAddToWatchlist = (id) => {
+    dispatch(addToWatchlist(id));
   };
 
-  const handleEdit = (movie) => {
-    setEditMovie(movie);
-    setIsOpen(true);
-    setPageHeader("Edit");
+  const handleRemoveFromWatchlist = (id) => {
+    dispatch(removeFromWatchlist(id));
+  };
+
+  const handleEdit = () => {
+    setIsEditing(true);
+  };
+
+  const handleAddReview = (review) => {
+    dispatch(addReview({ id: selectedMovie._id, review }));
+    dispatch(fetchMovies());
+    setSelectedMovie(movies.find((el) => el?._id === selectedMovie._id));
+  };
+
+  const handleUpdateRating = (rating) => {
+    dispatch(updateRating({ id: selectedMovie._id, rating }));
+  };
+
+  const handleView = (movie) => {
+    console.log("🚀 ~ handleView ~ movie:", movie);
+    setSelectedMovie(movie);
+    setIsEditing(false);
+    toggleDrawer(movie);
   };
 
   const handleAdd = () => {
-    setIsOpen(true);
-    setPageHeader("Add");
+    setIsOpen(!isOpen);
+    setIsEditing(true);
+    setSelectedMovie(null);
   };
 
   return (
     <div>
-      <div className="pageHeading">
-        <div>Movies Watchlist created by you!!</div>
-        <button className="addButton" onClick={handleAdd}>
-          Add movies
-        </button>
-      </div>
+      <div>Movies Watchlist created by you!!</div>
+      <button onClick={handleAdd}>Add movies</button>
       <div className="listContainer">
-        {watchlist?.map((movie) => (
+        {movies.map((movie) => (
           <MovieCard
+            key={movie._id}
             movie={movie}
+            handleEditMovie={handleEditMovie}
+            handleDeleteMovie={handleDeleteMovie}
+            handleAddToWatchlist={handleAddToWatchlist}
+            handleRemoveFromWatchlist={handleRemoveFromWatchlist}
+            toggleDrawer={toggleDrawer}
             openPopup={openPopup}
-            handleEdit={() => handleEdit(movie)}
+            handleView={handleView}
+            setIsEditing={setIsEditing}
           />
         ))}
       </div>
       {isOpen && (
         <Drawer isOpen={isOpen} toggleDrawer={toggleDrawer}>
-          <AddEditForm
-            movie={editMovie}
-            pageHeader={pageHeader}
-            toggleDrawer={toggleDrawer}
-          />
+          {isEditing ? (
+            <AddEditForm
+              movie={selectedMovie}
+              handleAddMovie={handleAddMovie}
+              toggleDrawer={toggleDrawer}
+              handleEditMovie={handleEditMovie}
+            />
+          ) : (
+            <ViewDetails
+              movie={selectedMovie}
+              pageHeader="View"
+              onEdit={handleEdit}
+              onDelete={openPopup}
+              onAddReview={handleAddReview}
+              onUpdateRating={handleUpdateRating}
+            />
+          )}
         </Drawer>
       )}
       {isPopupOpen && (

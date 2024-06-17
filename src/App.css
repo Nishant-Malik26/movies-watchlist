@@ -115,6 +115,7 @@ body {
   flex-direction: column;
   row-gap: 15px;
   width: 65%;
+  margin-top: 1rem;
   /* line-height: 45px; */
 }
 .input-container input {
@@ -254,6 +255,7 @@ body {
   display: flex;
   flex-direction: column;
   box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2);
+  overflow-y: auto;
 }
 
 .drawer.open {
@@ -274,7 +276,7 @@ body {
 }
 
 .drawer-content {
-  flex-grow: 0.5;
+  flex-grow: 0.1;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -288,7 +290,12 @@ body {
   border-top: 1px solid #ddd;
   background-color: white;
   margin-top: 22rem;
+  bottom: 2.3rem;
+  width: 80%;
+  position: sticky;
+  bottom: 15px;
 }
+
 .footerPopup {
   display: flex;
   justify-content: space-between;
@@ -435,4 +442,106 @@ body {
 
 .backdrop.open {
   opacity: 1;
+}
+
+/* View Details Design */
+.view-container {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.drawer-header {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.movie-details {
+  flex-grow: 1;
+  /* overflow-y: auto; */
+  padding-bottom: 2rem;
+}
+
+.image-drawer {
+  width: 100%;
+  max-width: 400px;
+  margin-bottom: 20px;
+}
+
+.movie-info {
+  margin-bottom: 20px;
+}
+
+.reviews {
+  margin-bottom: 20px;
+}
+
+.review {
+  background-color: #f8f8f8;
+  padding: 10px;
+  margin-bottom: 5px;
+  border-radius: 4px;
+}
+
+.star-rating {
+  display: flex;
+  align-items: center;
+}
+
+.star {
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.add-review {
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.add-review input {
+  flex-grow: 1;
+  padding: 5px;
+  margin-right: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.add-review button {
+  background-color: black;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.add-review button:hover {
+  background-color: #333;
+}
+
+.actions {
+  position: sticky;
+  bottom: 1.2rem;
+  display: flex;
+  justify-content: space-between;
+  background: white;
+  padding-bottom: 1rem;
+  padding-top: 1rem;
+}
+
+.actions button {
+  background-color: black;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.actions button:hover {
+  background-color: #333;
 }
