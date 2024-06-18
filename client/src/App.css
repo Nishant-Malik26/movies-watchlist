@@ -615,3 +615,29 @@ body {
   border: 2px solid red;
   background-color: red;
 }
+
+.alert {
+  position: absolute;
+  top: 1rem;
+  right: 10rem;
+  width: 25rem;
+  z-index: 9;
+  padding: 0.8rem;
+  margin: 1rem 0;
+  opacity: 0.9;
+  background: coral;
+  color: #333;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.alert-danger {
+  background: red;
+  color: #fff;
+}
+
+.alert-success {
+  background-color: rgb(101, 180, 23);
+  color: #fff;
+}

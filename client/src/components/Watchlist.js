@@ -15,18 +15,29 @@ import AddEditForm from "./AddEditForm";
 import ConfirmationPopup from "./ConfirmationPopup";
 import ViewDetails from "./ViewDetails";
 import { logout } from "../store/authSlice";
+import { useNavigate } from "react-router-dom";
 
 const Watchlist = () => {
   const dispatch = useDispatch();
   const movies = useSelector((state) => state.movies.movies);
+  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
   const [isOpen, setIsOpen] = useState(false);
   const [selectedMovie, setSelectedMovie] = useState(null);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    dispatch(fetchMovies());
-  }, [dispatch]);
+    if (!isAuthenticated) {
+      navigate("/signin");
+    }
+  }, [isAuthenticated, navigate]);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      dispatch(fetchMovies());
+    }
+  }, [dispatch, isAuthenticated]);
 
   const toggleDrawer = (movie) => {
     setSelectedMovie(movie);

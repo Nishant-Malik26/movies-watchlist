@@ -1,18 +1,72 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import {
+  createSlice,
+  createAsyncThunk,
+  isRejectedWithValue,
+} from "@reduxjs/toolkit";
 import axiosInstance from "../api/apiConfig";
+import { setAlertWithRemove } from "./removeAlert";
 
 export const registerUser = createAsyncThunk(
   "auth/registerUser",
-  async (user) => {
-    const response = await axiosInstance.post("/auth/register", user);
-    return response.data;
+  async (user, thunkAPI) => {
+    try {
+      const response = await axiosInstance.post("/auth/register", user);
+      thunkAPI.dispatch(
+        setAlertWithRemove({
+          msg: "User Created Successfully",
+          alertType: "success",
+        })
+      );
+      return response.data;
+    } catch (error) {
+      if (Array.isArray(error.response.data.errors)) {
+        error.response.data.errors.forEach((error) =>
+          thunkAPI.dispatch(
+            setAlertWithRemove({ msg: error, alertType: "danger" })
+          )
+        );
+      } else {
+        thunkAPI.dispatch(
+          setAlertWithRemove({
+            msg: error.response.data.errors,
+            alertType: "danger",
+          })
+        );
+      }
+      return thunkAPI.rejectWithValue(
+        error.response.data.errors || "Invalid Credentials"
+      );
+    }
   }
 );
 
-export const loginUser = createAsyncThunk("auth/loginUser", async (user) => {
-  const response = await axiosInstance.post("/auth/login", user);
-  return response.data;
-});
+export const loginUser = createAsyncThunk(
+  "auth/loginUser",
+  async (user, thunkAPI) => {
+    try {
+      const response = await axiosInstance.post("/auth/login", user);
+      return response.data;
+    } catch (error) {
+      if (Array.isArray(error.response.data.errors)) {
+        error.response.data.errors.forEach((error) =>
+          thunkAPI.dispatch(
+            setAlertWithRemove({ msg: error, alertType: "danger" })
+          )
+        );
+      } else {
+        thunkAPI.dispatch(
+          setAlertWithRemove({
+            msg: error.response.data.errors,
+            alertType: "danger",
+          })
+        );
+      }
+      return thunkAPI.rejectWithValue(
+        error.response.data.errors || "Invalid Credentials"
+      );
+    }
+  }
+);
 
 const authSlice = createSlice({
   name: "auth",
@@ -37,16 +91,22 @@ const authSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(registerUser.fulfilled, (state, action) => {
-        localStorage.setItem("token", action.payload.token);
+        localStorage.setItem("token", action.payload?.token);
         state.token = action.payload.token;
         state.isAuthenticated = true;
         state.loading = false;
       })
       .addCase(loginUser.fulfilled, (state, action) => {
-        localStorage.setItem("token", action.payload.token);
+        localStorage.setItem("token", action.payload?.token);
         state.token = action.payload.token;
         state.isAuthenticated = true;
         state.loading = false;
+      })
+      .addMatcher(isRejectedWithValue, (state, action) => {
+        localStorage.setItem("token", null);
+        state.token = null;
+        state.isAuthenticated = false;
+        state.loading = true;
       });
   },
 });

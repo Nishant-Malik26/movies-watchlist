@@ -25,7 +25,7 @@ router.post(
       let user = await User.findOne({ username });
 
       if (user) {
-        return res.status(400).json({ msg: "User already exists" });
+        return res.status(400).json({ errors: "User already exists" });
       }
 
       user = new User({
@@ -54,8 +54,7 @@ router.post(
         }
       );
     } catch (err) {
-      console.error(err.message);
-      res.status(500).send("Server error");
+      res.status(500).send("Internal Server error");
     }
   }
 );
@@ -78,13 +77,13 @@ router.post(
       let user = await User.findOne({ username });
 
       if (!user) {
-        return res.status(400).json({ msg: "Invalid Credentials" });
+        return res.status(400).json({ errors: "Invalid Credentials" });
       }
 
       const isMatch = await bcrypt.compare(password, user.password);
 
       if (!isMatch) {
-        return res.status(400).json({ msg: "Invalid Credentials" });
+        return res.status(400).json({ errors: "Invalid Credentials" });
       }
 
       const payload = {
@@ -103,8 +102,7 @@ router.post(
         }
       );
     } catch (err) {
-      console.error(err.message);
-      res.status(500).send("Server error");
+      res.status(500).send("Internal Server error");
     }
   }
 );

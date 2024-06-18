@@ -7,6 +7,7 @@ import { useDispatch } from "react-redux";
 import Signin from "./components/Signin";
 import { PrivateRoutes } from "./components/routing/PrivateRoutes";
 import { loadUser } from "./store/authSlice";
+import Alert from "./components/Alert";
 
 function App() {
   const dispatch = useDispatch();
@@ -18,6 +19,7 @@ function App() {
 
   return (
     <BrowserRouter>
+      <Alert />
       <Routes>
         <Route path="/signup" element={<Signup />} />
         <Route path="/signin" element={<Signin />} />
