@@ -11,7 +11,7 @@ router.post(
   "/register",
   [
     check("username", "Username is required").not().isEmpty(),
-    check("password", "Password is should contain minimum 8 charaters").isLength({ min: 8 }),
+    check("password", "Password must contain minimum 8 charaters").isLength({ min: 8 }),
   ],
   async (req, res) => {
     const errors = validationResult(req);
