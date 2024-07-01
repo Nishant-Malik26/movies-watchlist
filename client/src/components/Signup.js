@@ -1,17 +1,26 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { registerUser } from "../store/authSlice";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 export const Signup = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     dispatch(registerUser({ username, password }));
   };
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/watchlist");
+    }
+  }, [isAuthenticated, navigate]);
+
   return (
     <form onSubmit={handleSubmit}>
       <div className="grid-container">

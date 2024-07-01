@@ -11,12 +11,7 @@ export const registerUser = createAsyncThunk(
   async (user, thunkAPI) => {
     try {
       const response = await axiosInstance.post("/auth/register", user);
-      thunkAPI.dispatch(
-        setAlertWithRemove({
-          msg: "User Created Successfully",
-          alertType: "success",
-        })
-      );
+
       return response.data;
     } catch (error) {
       if (Array.isArray(error.response.data.errors)) {
