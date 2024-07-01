@@ -20,15 +20,19 @@ export const registerUser = createAsyncThunk(
       return response.data;
     } catch (error) {
       if (Array.isArray(error.response.data.errors)) {
-        error.response.data.errors.forEach((error) =>
+        error.response.data.errors.forEach((error, idx) =>
           thunkAPI.dispatch(
-            setAlertWithRemove({ msg: error, alertType: "danger" })
+            setAlertWithRemove({
+              id: error?.type || idx,
+              msg: error.msg,
+              alertType: "danger",
+            })
           )
         );
       } else {
         thunkAPI.dispatch(
           setAlertWithRemove({
-            msg: error.response.data.errors,
+            msg: error.response.data.errors?.msg || "Internal Server Error",
             alertType: "danger",
           })
         );
@@ -50,13 +54,13 @@ export const loginUser = createAsyncThunk(
       if (Array.isArray(error.response.data.errors)) {
         error.response.data.errors.forEach((error) =>
           thunkAPI.dispatch(
-            setAlertWithRemove({ msg: error, alertType: "danger" })
+            setAlertWithRemove({ msg: error?.msg, alertType: "danger" })
           )
         );
       } else {
         thunkAPI.dispatch(
           setAlertWithRemove({
-            msg: error.response.data.errors,
+            msg: error.response.data.errors?.msg || "Internal Server Error",
             alertType: "danger",
           })
         );
